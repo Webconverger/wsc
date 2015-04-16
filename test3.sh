@@ -1,0 +1,1 @@
+curl -i -H "Content-Type: application/json" -X POST -d '{ "url": "https://gu.com%20http://yahoo.com%20http://news.bbc.co.uk/", "devices": [ "just_testing", "ace" ] }' https://wss.webconverger.com/hook/

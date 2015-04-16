@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"golang.org/x/net/websocket"
@@ -14,7 +14,7 @@ import (
 
 func main() {
 	id := "https://webconverger.com/" + os.Getenv("webc_id")
-	pond := "ws://ws.webconverger.com/fish"
+	pond := "wss://wss.webconverger.com/fish"
 	var msg = make([]byte, 512)
 
 	var err error
@@ -55,19 +55,12 @@ func main() {
 		log.Printf("Received: %s\n", msg)
 		rurl := string(msg[:n])
 
-		u, err := url.ParseRequestURI(rurl)
-		if err == nil {
-			switch u.Scheme {
-			case "http", "https":
-				ws.Close()
-				fmt.Println(u)
-				if err := cmd.Process.Kill(); err != nil {
-					log.Fatal("failed to kill: ", err)
-				}
-				os.Exit(0)
-			default:
-				log.Println("Non-URL returned:", rurl)
+		if strings.HasPrefix(rurl, "http") {
+			if err := cmd.Process.Kill(); err != nil {
+				log.Fatal("failed to kill: ", err)
 			}
+			fmt.Println(rurl)
+			os.Exit(0)
 		}
 
 		time.Sleep(1 * time.Second)
